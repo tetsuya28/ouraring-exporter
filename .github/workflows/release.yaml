@@ -54,6 +54,8 @@ jobs:
         run: zip ouraring-exporter.zip bin/ouraring-exporter
 
       - name: Upload
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           gh api \
             --method POST \
