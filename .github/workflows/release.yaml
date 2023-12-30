@@ -22,9 +22,6 @@ jobs:
         run: |
           echo "upload_url=${{ steps.draft_release.outputs.upload_url }}" >> "$GITHUB_ENV"
 
-      - name: Test
-        run: ${{ env.upload_url }}
-
   build:
     name: Build
     runs-on: ubuntu-latest
