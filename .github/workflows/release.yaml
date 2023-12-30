@@ -20,7 +20,7 @@ jobs:
           draft: true
       - name: Set upload url
         run: |
-          echo "upload_url=${{ steps.draft_release.outputs.upload_url }}" >> "$GITHUB_ENV"
+          echo "release_id=${{ steps.draft_release.outputs.id }}" >> "$GITHUB_ENV"
 
   build:
     name: Build
@@ -53,10 +53,12 @@ jobs:
       - name: Zip
         run: zip ouraring-exporter.zip bin/ouraring-exporter
 
-  release:
-    name: Release
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Create release
-        uses: softprops/action-gh-release@v1
+      - name: Upload
+        run: |
+          gh api \
+            --method PATCH \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            
+            "/repos/tetsuya28/ouraring-exporter/releases/${{ env.release_id }}/assets?name=linux-${{ matrix.arc }}/ouraring-exporter.zip" \
+            -f '@ouraring-exporter.zip'
