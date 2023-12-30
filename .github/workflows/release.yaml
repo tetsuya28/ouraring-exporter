@@ -48,12 +48,10 @@ jobs:
             ${GITHUB_REF#refs/*/} \
             linux-${{ matrix.arch }}-ouraring-exporter.zip
 
-  draft_release:
-    name: Draft release
+  release:
+    name: Create release
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - name: Draft release
+      - name: Create release
         uses: softprops/action-gh-release@v1
-        with:
-          draft: true
