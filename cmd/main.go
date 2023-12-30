@@ -44,7 +44,7 @@ func main() {
 		log.Critical(err.Error())
 	}
 
-	repository := repository.NewHeartRate(ouraringClient)
+	repository := repository.New(ouraringClient)
 	repository.StartHeartRate(ctx, time.Duration(cfg.OuraringAPICallIntervalSeconds)*time.Second)
 	reg.MustRegister(repository.GetHeartRateRegister())
 
