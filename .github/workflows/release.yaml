@@ -53,16 +53,13 @@ jobs:
       - name: Zip
         run: zip ouraring-exporter.zip bin/ouraring-exporter
 
-      - name: Test
-        run: ls -lah
-
-          #       - name: Upload
-          #         env:
-          #           GH_TOKEN: ${{ github.token }}
-          #         run: |
-          #           gh api \
-          #             --method POST \
-          #             -H "Accept: application/vnd.github+json" \
-          #             -H "X-GitHub-Api-Version: 2022-11-28" \
-          #             "/repos/tetsuya28/ouraring-exporter/releases/${{ env.release_id }}/assets?name=linux-${{ matrix.arc }}/ouraring-exporter.zip" \
-          #             -f '@ouraring-exporter.zip'
+      - name: Upload
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api \
+            --method POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "/repos/tetsuya28/ouraring-exporter/releases/${{ env.release_id }}/assets?name=linux-${{ matrix.arc }}-ouraring-exporter.zip" \
+            -f '@ouraring-exporter.zip'
