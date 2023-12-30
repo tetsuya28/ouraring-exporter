@@ -1,0 +1,74 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - v**
+
+permissions:
+  contents: write
+
+jobs:
+  draft_release:
+    name: Draft release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Draft release
+        uses: softprops/action-gh-release@v1
+        with:
+          draft: true
+
+  build:
+    name: Build
+    needs: draft_release
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: ["linux", "darwin"]
+        arch: ["amd64", "arm64"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v4
+        with:
+          go-version-file: go.mod
+          cache-dependency-path: go.mod
+
+      - uses: actions/cache@v3.3.2
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ matrix.arch }}-go-${{ hashFiles('go.sum', '*/go.sum') }}
+          restore-keys: |
+            ${{ matrix.arch }}-go
+
+      - name: Build
+        run: |
+          GOOS=${{ matrix.os }} GOARCH=${{ matrix.arch }} go build -o bin/ouraring-exporter cmd/main.go
+
+      - name: Zip
+        run: zip ${{ matrix.os }}-${{ matrix.arch }}-ouraring-exporter.zip bin/ouraring-exporter
+
+      - name: Upload
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release upload \
+            -R tetsuya28/ouraring-exporter \
+            ${GITHUB_REF#refs/*/} \
+            ${{ matrix.os }}-${{ matrix.arch }}-ouraring-exporter.zip
+
+  release:
+    name: Release
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release edit \
+            -R tetsuya28/ouraring-exporter \
+            ${GITHUB_REF#refs/*/} \
+            --draft=false
