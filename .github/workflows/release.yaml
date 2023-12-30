@@ -24,6 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
+        os: ["linux", "darwin"]
         arch: ["amd64", "arm64"]
     steps:
       - uses: actions/checkout@v4
@@ -44,10 +45,10 @@ jobs:
 
       - name: Build
         run: |
-          GOOS=linux GOARCH=${{ matrix.arch }} go build -o bin/ouraring-exporter cmd/main.go
+          GOOS=${{ matrix.os }} GOARCH=${{ matrix.arch }} go build -o bin/ouraring-exporter cmd/main.go
 
       - name: Zip
-        run: zip linux-${{ matrix.arch }}-ouraring-exporter.zip bin/ouraring-exporter
+        run: zip ${{ matrix.os }}-${{ matrix.arch }}-ouraring-exporter.zip bin/ouraring-exporter
 
       - name: Upload
         env:
@@ -56,7 +57,7 @@ jobs:
           gh release upload \
             -R tetsuya28/ouraring-exporter \
             ${GITHUB_REF#refs/*/} \
-            linux-${{ matrix.arch }}-ouraring-exporter.zip
+            ${{ matrix.os }}-${{ matrix.arch }}-ouraring-exporter.zip
 
   release:
     name: Release
