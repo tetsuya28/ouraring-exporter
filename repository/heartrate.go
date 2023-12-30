@@ -10,42 +10,14 @@ import (
 	"github.com/ucpr/mongo-streamer/pkg/log"
 )
 
-type Repository interface {
-	GetHeartRateRegister() *Collector
-	StartHeartRate(ctx context.Context, durationSeconds time.Duration) error
-}
-
-type repository struct {
-	ouraringClient    *ouraring.Client
-	heartrateRegister *Collector
-}
-
-type Collector struct {
-	metric    *prometheus.Desc
+type HeartRateCollector struct {
+	desc      *prometheus.Desc
 	heartRate []ouraring.HeartRateModel
 }
 
-func (c *Collector) Describe(ch chan<- *prometheus.Desc) {
-	ch <- c.metric
-}
-
-func (c *Collector) Collect(ch chan<- prometheus.Metric) {
-	for _, h := range c.heartRate {
-		ch <- prometheus.NewMetricWithTimestamp(
-			h.Timestamp,
-			prometheus.MustNewConstMetric(
-				c.metric,
-				prometheus.GaugeValue,
-				float64(h.Bpm),
-				string(h.Source),
-			),
-		)
-	}
-}
-
-func NewHeartRate(ouraringClient *ouraring.Client) Repository {
-	heartrate := &Collector{
-		metric: prometheus.NewDesc(
+func newHeartRateCollector() *HeartRateCollector {
+	return &HeartRateCollector{
+		desc: prometheus.NewDesc(
 			"ouraring_exporter_usercollection_heartrate",
 			"",
 			[]string{
@@ -54,18 +26,31 @@ func NewHeartRate(ouraringClient *ouraring.Client) Repository {
 			nil,
 		),
 	}
+}
 
-	return &repository{
-		ouraringClient:    ouraringClient,
-		heartrateRegister: heartrate,
+func (c *HeartRateCollector) Describe(ch chan<- *prometheus.Desc) {
+	ch <- c.desc
+}
+
+func (c *HeartRateCollector) Collect(ch chan<- prometheus.Metric) {
+	for _, h := range c.heartRate {
+		ch <- prometheus.NewMetricWithTimestamp(
+			h.Timestamp,
+			prometheus.MustNewConstMetric(
+				c.desc,
+				prometheus.GaugeValue,
+				float64(h.Bpm),
+				string(h.Source),
+			),
+		)
 	}
 }
 
-func (r repository) GetHeartRateRegister() *Collector {
-	return r.heartrateRegister
+func (r repository) GetHeartRateCollector() *HeartRateCollector {
+	return r.heartRateCollector
 }
 
-func (r repository) StartHeartRate(ctx context.Context, durationSeconds time.Duration) error {
+func (r repository) StartHeartRateCollector(ctx context.Context, durationSeconds time.Duration) error {
 	ticker := time.NewTicker(durationSeconds)
 
 	go func() {
@@ -96,7 +81,7 @@ func (r repository) StartHeartRate(ctx context.Context, durationSeconds time.Dur
 				continue
 			}
 
-			r.heartrateRegister.heartRate = b.JSON200.Data
+			r.heartRateCollector.heartRate = b.JSON200.Data
 		}
 	}()
 
