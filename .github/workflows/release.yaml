@@ -9,8 +9,19 @@ permissions:
   contents: write
 
 jobs:
+  draft_release:
+    name: Draft release
+    id: draft_release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Draft release
+        uses: softprops/action-gh-release@v1
+        with:
+          draft: true
+
   build:
     name: Build
+    needs: draft_release
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -49,9 +60,15 @@ jobs:
             linux-${{ matrix.arch }}-ouraring-exporter.zip
 
   release:
-    name: Create release
+    name: Release
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - name: Create release
-        uses: softprops/action-gh-release@v1
+      - name: Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release edit \
+            -R tetsuya28/ouraring-exporter \
+            ${GITHUB_REF#refs/*/} \
+            --draft=false
