@@ -59,6 +59,5 @@ jobs:
             --method POST \
             -H "Accept: application/vnd.github+json" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
-            
             "/repos/tetsuya28/ouraring-exporter/releases/${{ env.release_id }}/assets?name=linux-${{ matrix.arc }}/ouraring-exporter.zip" \
             -f '@ouraring-exporter.zip'
