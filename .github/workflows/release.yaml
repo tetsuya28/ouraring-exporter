@@ -9,23 +9,9 @@ permissions:
   contents: write
 
 jobs:
-  draft_release:
-    name: Draft release
-    runs-on: ubuntu-latest
-    steps:
-      - name: Draft release
-        id: draft_release
-        uses: softprops/action-gh-release@v1
-        with:
-          draft: true
-      - name: Set upload url
-        run: |
-          echo "release_id=${{ steps.draft_release.outputs.id }}" >> "$GITHUB_ENV"
-
   build:
     name: Build
     runs-on: ubuntu-latest
-    needs: draft_release
     strategy:
       matrix:
         arch: ["amd64", "arm64"]
@@ -54,8 +40,20 @@ jobs:
         run: zip linux-${{ matrix.arch }}-ouraring-exporter.zip bin/ouraring-exporter
 
       - name: Upload
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           gh release upload \
             -R tetsuya28/ouraring-exporter \
             ${GITHUB_REF#refs/*/} \
             linux-${{ matrix.arch }}-ouraring-exporter.zip
+
+  draft_release:
+    name: Draft release
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Draft release
+        uses: softprops/action-gh-release@v1
+        with:
+          draft: true
