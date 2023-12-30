@@ -45,8 +45,18 @@ func main() {
 	}
 
 	repository := repository.New(ouraringClient)
-	repository.StartHeartRate(ctx, time.Duration(cfg.OuraringAPICallIntervalSeconds)*time.Second)
-	reg.MustRegister(repository.GetHeartRateRegister())
+
+	err = repository.StartHeartRateCollector(ctx, time.Duration(cfg.OuraringAPICallIntervalSeconds)*time.Second)
+	if err != nil {
+		log.Critical(err.Error())
+	}
+	reg.MustRegister(repository.GetHeartRateCollector())
+
+	err = repository.StartPersonalInfoCollector(ctx)
+	if err != nil {
+		log.Critical(err.Error())
+	}
+	reg.MustRegister(repository.GetPersonalInfoCollector())
 
 	mux := http.NewServeMux()
 

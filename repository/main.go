@@ -9,19 +9,24 @@ import (
 
 type Repository interface {
 	// HeartRate
-	GetHeartRateRegister() *HeartRateCollector
-	StartHeartRate(ctx context.Context, durationSeconds time.Duration) error
+	GetHeartRateCollector() *HeartRateCollector
+	StartHeartRateCollector(ctx context.Context, durationSeconds time.Duration) error
+
+	// PersonalInfo
+	GetPersonalInfoCollector() *PersonalInfoCollector
+	StartPersonalInfoCollector(ctx context.Context) error
 }
 
 type repository struct {
-	ouraringClient     *ouraring.Client
-	heartRateCollector *HeartRateCollector
+	ouraringClient        *ouraring.Client
+	heartRateCollector    *HeartRateCollector
+	personalInfoCollector *PersonalInfoCollector
 }
 
 func New(ouraringClient *ouraring.Client) Repository {
-
 	return &repository{
-		ouraringClient:     ouraringClient,
-		heartRateCollector: newHeartRateCollector(),
+		ouraringClient:        ouraringClient,
+		heartRateCollector:    newHeartRateCollector(),
+		personalInfoCollector: newPersonalInfoCollector(),
 	}
 }

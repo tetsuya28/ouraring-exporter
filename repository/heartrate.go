@@ -46,11 +46,11 @@ func (c *HeartRateCollector) Collect(ch chan<- prometheus.Metric) {
 	}
 }
 
-func (r repository) GetHeartRateRegister() *HeartRateCollector {
+func (r repository) GetHeartRateCollector() *HeartRateCollector {
 	return r.heartRateCollector
 }
 
-func (r repository) StartHeartRate(ctx context.Context, durationSeconds time.Duration) error {
+func (r repository) StartHeartRateCollector(ctx context.Context, durationSeconds time.Duration) error {
 	ticker := time.NewTicker(durationSeconds)
 
 	go func() {
