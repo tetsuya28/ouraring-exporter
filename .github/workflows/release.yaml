@@ -11,7 +11,6 @@ permissions:
 jobs:
   draft_release:
     name: Draft release
-    id: draft_release
     runs-on: ubuntu-latest
     steps:
       - name: Draft release
