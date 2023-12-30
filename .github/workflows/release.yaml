@@ -48,7 +48,7 @@ jobs:
 
       - name: Build
         run: |
-          GOOS=linux GOARCH=${{ matrix.arch }} go build cmd/main.go -o bin/ouraring-exporter
+          GOOS=linux GOARCH=${{ matrix.arch }} go build -o bin/ouraring-exporter cmd/main.go
 
       - name: Zip
         run: zip ouraring-exporter.zip bin/ouraring-exporter
