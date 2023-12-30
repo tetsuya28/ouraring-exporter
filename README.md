@@ -10,7 +10,7 @@ OURARING_API_KEY=XXX go run cmd/main.go
 |Multiple Daily Readiness Documents||
 |Multiple Daily Sleep Documents||
 |Multiple Daily Spo2 Documents||
-|Multiple Heart Rate Documents|✔️|
+|Multiple Heart Rate Documents|✔️ ( v0.0.1 ) |
 |Single Personal Info Document||
 |Multiple Rest Mode Period Documents||
 |Multiple Ring Configuration Documents||
