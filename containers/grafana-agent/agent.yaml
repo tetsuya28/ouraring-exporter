@@ -1,0 +1,15 @@
+server:
+  log_level: warn
+
+metrics:
+  global:
+    scrape_interval: 5s
+    remote_write:
+      - url: http://host.docker.internal:8428/api/v1/write
+  configs:
+    - name: default
+      scrape_configs:
+        - job_name: default
+          static_configs:
+            - targets:
+                - host.docker.internal:8888

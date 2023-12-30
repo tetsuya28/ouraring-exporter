@@ -1,0 +1,9 @@
+services:
+  grafana-agent:
+    image: grafana/agent:v0.38.1
+    container_name: grafana-agent
+    entrypoint:
+      - /bin/grafana-agent
+      - -config.file=/etc/agent-config/agent.yaml
+    volumes:
+      - ./containers/grafana-agent:/etc/agent-config
