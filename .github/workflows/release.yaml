@@ -51,15 +51,11 @@ jobs:
           GOOS=linux GOARCH=${{ matrix.arch }} go build -o bin/ouraring-exporter cmd/main.go
 
       - name: Zip
-        run: zip ouraring-exporter.zip bin/ouraring-exporter
+        run: zip linux-${{ matrix.arch }}-ouraring-exporter.zip bin/ouraring-exporter
 
       - name: Upload
-        env:
-          GH_TOKEN: ${{ github.token }}
         run: |
-          gh api \
-            --method POST \
-            -H "Accept: application/vnd.github+json" \
-            -H "X-GitHub-Api-Version: 2022-11-28" \
-            "/repos/tetsuya28/ouraring-exporter/releases/${{ env.release_id }}/assets?name=linux-${{ matrix.arc }}-ouraring-exporter.zip" \
-            -f '@ouraring-exporter.zip'
+          gh release upload \
+            -R tetsuya28/ouraring-exporter \
+            ${GITHUB_REF#refs/*/} \
+            linux-${{ matrix.arch }}-ouraring-exporter.zip
